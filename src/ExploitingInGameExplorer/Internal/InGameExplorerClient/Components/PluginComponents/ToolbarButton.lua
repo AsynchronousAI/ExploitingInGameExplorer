@@ -1,0 +1,35 @@
+local LocalScript = script:FindFirstAncestorWhichIsA("LocalScript")
+local Fusion = require(LocalScript:FindFirstChild("Fusion", true))
+
+local Hydrate = Fusion.Hydrate
+
+local COMPONENT_ONLY_PROPERTIES = {
+	"ToolTip",
+	"Name",
+	"Image",
+	"Toolbar",
+}
+
+type ToolbarProperties = {
+	Toolbar: LocalScriptToolbar,
+	ClickableWhenViewportHidden: boolean?,
+	ToolTip: string,
+	Image: string,
+	Name: string,
+	[any]: any,
+}
+
+return function(props: ToolbarProperties)
+	local toolbarButton = props.Toolbar:CreateButton(
+		props.Name,
+		props.ToolTip,
+		props.Image
+	)
+
+	local hydrateProps = table.clone(props)
+	for _,propertyName in pairs(COMPONENT_ONLY_PROPERTIES) do
+		hydrateProps[propertyName] = nil
+	end
+
+	return Hydrate(toolbarButton)(hydrateProps)
+end
